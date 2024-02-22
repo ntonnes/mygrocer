@@ -32,6 +32,8 @@
 
 <script>
 import { mapState } from 'vuex';
+import axios from 'axios';
+axios.defaults.baseURL = 'http://localhost:3000';
 
 export default {
   data() {
@@ -39,6 +41,19 @@ export default {
       dropdownOpen: false,
       theme: localStorage.getItem('theme') || 'light',
     };
+  },
+  created() {
+    axios.get('/api/session', { withCredentials: true })
+      .then(response => {
+        if (response.data.user) {
+          // If the server returns the user's data, the user is logged in
+          this.$store.commit('setIsLoggedIn', true);
+          this.$store.commit('setUser', response.data.user);
+        }
+      })
+      .catch(error => {
+        console.log(error);
+      });
   },
   computed: {
     ...mapState(['user']), // Map the 'user' state to a computed property
@@ -58,8 +73,15 @@ export default {
       this.dropdownOpen = !this.dropdownOpen;
     },
     signOut() {
-      // Add your sign out logic here
-    },
+    axios.post('/api/logout', {}, { withCredentials: true })
+      .then(() => {
+        this.$store.commit('setIsLoggedIn', false);
+        this.$store.commit('setUser', null);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  },
   },
 };
 </script>

@@ -16,17 +16,22 @@ app.use(cors({
 }));
 app.use(cookieParser());
 app.use(async (req, res, next) => {
-    const sessionToken = req.cookies.sessionToken;
-    console.log('Session token:', sessionToken); // Debug: print session token
-    if (sessionToken) {
-        const session = await pool.query('SELECT * FROM Sessions WHERE token = $1', [sessionToken]);
-        console.log('Session:', session.rows); // Debug: print session
-        if (session.rows.length > 0) {
-            req.user = session.rows[0].user_id; // Attach the user ID to the request
-            console.log('User ID:', req.user); // Debug: print user ID
+    try {
+        const sessionToken = req.cookies.sessionToken;
+        console.log('Session token:', sessionToken); // Debug: print session token
+        if (sessionToken) {
+            const session = await pool.query('SELECT * FROM Sessions WHERE token = $1', [sessionToken]);
+            console.log('Session:', session.rows); // Debug: print session
+            if (session.rows.length > 0) {
+                req.user = session.rows[0].user_id; // Attach the user ID to the request
+                console.log('User ID:', req.user); // Debug: print user ID
+            }
         }
+        next();
+    } catch (error) {
+        console.error('Error in session middleware:', error);
+        next(error);
     }
-    next();
 });
 
 
@@ -69,6 +74,21 @@ app.post('/register', async (req, res) => {
     res.status(201).send('User created');
 });
 
+// Session endpoint
+app.get('/api/session', async (req, res) => {
+    const sessionToken = req.cookies.sessionToken;
+    if (sessionToken) {
+      const session = await pool.query('SELECT * FROM Sessions WHERE token = $1', [sessionToken]);
+      if (session.rows.length > 0) {
+        const user = await pool.query('SELECT * FROM Users WHERE id = $1', [session.rows[0].user_id]);
+        res.json({ user: user.rows[0] });
+      } else {
+        res.json({ user: null });
+      }
+    } else {
+      res.json({ user: null });
+    }
+  });
 
 // Login endpoint
 app.post('/login', async (req, res) => {
@@ -97,8 +117,20 @@ app.post('/login', async (req, res) => {
     const sessionToken = generateUniqueToken();
     console.log('Generated session token:', sessionToken); // Debug: print generated session token
     await pool.query('INSERT INTO Sessions (user_id, token) VALUES ($1, $2)', [user.rows[0].id, sessionToken]);
-    res.cookie('sessionToken', sessionToken, { httpOnly: true });
+    res.cookie('sessionToken', sessionToken, { httpOnly: true, maxAge: 86400000 });
     res.status(200).json({ user: user.rows[0] });
+});
+
+// Logout endpoint
+app.post('/api/logout', async (req, res) => {
+    const sessionToken = req.cookies.sessionToken;
+    if (sessionToken) {
+        // Invalidate the session in the database
+        await pool.query('DELETE FROM Sessions WHERE token = $1', [sessionToken]);
+    }
+    // Clear the session cookie
+    res.clearCookie('sessionToken');
+    res.status(200).send('Logged out');
 });
 
 
