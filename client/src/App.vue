@@ -6,6 +6,7 @@
         <router-link to="/">Home</router-link>
         <router-link to="/about">About</router-link>
         <router-link to="/shopping-list">Shopping List</router-link>
+        <router-link to="/login">Login Page</router-link>
         <label class="switch">
           <input type="checkbox" v-model="isDarkMode" @change="toggleTheme">
           <span class="slider round"></span>

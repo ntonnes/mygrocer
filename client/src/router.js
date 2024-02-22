@@ -5,12 +5,14 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeComponent from './components/HomePage.vue'
 import AboutPage from './components/AboutPage.vue'
 import ShoppingList from './components/ShoppingList.vue'
+import LoginPage from './components/LoginPage.vue'
 
 // Define the routes for the application. Each route is mapped to a component.
 const routes = [
     { path: '/', component: HomeComponent }, // When the user goes to the '/' path, the HomeComponent will be displayed
     { path: '/about', component: AboutPage }, // When the user goes to the '/about' path, the AboutPage will be displayed
     { path: '/shopping-list', component: ShoppingList }, // When the user goes to the '/about' path, the AboutPage will be displayed
+    { path: '/login', component: LoginPage },
     { path: '/:catchAll(.*)', redirect: '/'}
 ]
 

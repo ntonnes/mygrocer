@@ -1,0 +1,10 @@
+-- droptbl.sql
+
+DROP TABLE IF EXISTS CalendarEvents;
+DROP TABLE IF EXISTS Pantry;
+DROP TABLE IF EXISTS RecipeIngredients;
+DROP TABLE IF EXISTS Ingredients;
+DROP TABLE IF EXISTS Recipes;
+DROP TABLE IF EXISTS Sessions;
+DROP TABLE IF EXISTS Preferences;
+DROP TABLE IF EXISTS Users;
