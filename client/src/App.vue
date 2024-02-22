@@ -2,12 +2,22 @@
   <div id="app" :class="theme">
     <header>
       <h1><span class="font-one">My</span><span class="font-two">Grocer</span></h1>
-      <nav>
+      <nav class="nav-style">
         <router-link to="/">Home</router-link>
         <router-link to="/about">About</router-link>
         <router-link to="/shopping-list">Shopping List</router-link>
-        <router-link v-if="!isLoggedIn" to="/login">Login</router-link>
-        <span v-else>Hi, {{ userEmail }}!</span>
+        <span v-if="isLoggedIn" class="dropdown">
+          <button class="nav-link" @click="toggleDropdown">
+            Hi, {{ userEmail }}! 
+            <i class="arrow" :class="{ 'down': !dropdownOpen, 'up': dropdownOpen }"></i>
+          </button>
+          <div id="dropdown-content" class="dropdown-content" :class="{ 'show-dropdown': dropdownOpen }">
+            <router-link to="/account-settings">Account Settings</router-link>
+            <router-link to="/preferences">Preferences</router-link>
+            <a href="#" @click="signOut">Sign Out</a>
+          </div>
+        </span>
+        <router-link v-else to="/login">Login</router-link>
         <label class="switch">
           <input type="checkbox" v-model="isDarkMode" @change="toggleTheme">
           <span class="slider round"></span>
@@ -26,6 +36,7 @@ import { mapState } from 'vuex';
 export default {
   data() {
     return {
+      dropdownOpen: false,
       theme: localStorage.getItem('theme') || 'light',
     };
   },
@@ -42,6 +53,12 @@ export default {
     toggleTheme() {
       this.theme = this.theme === 'light' ? 'dark' : 'light';
       localStorage.setItem('theme', this.theme);
+    },
+    toggleDropdown() {
+      this.dropdownOpen = !this.dropdownOpen;
+    },
+    signOut() {
+      // Add your sign out logic here
     },
   },
 };
@@ -90,13 +107,14 @@ header h1 .font-two {
   color:var(--text-color)
 }
 
-nav {
+.nav-style {
   padding-top: 3%;
   font-weight: bold;
   color: var(--text-color);
   font-family: 'Roboto Condensed', sans-serif; /* Match the font with the header */
   display: flex;
   justify-content: space-around; /* Space out the links */
+  align-items: center; /* Center the links vertically */
 }
 
 nav a {
@@ -106,6 +124,20 @@ nav a {
 }
 
 nav a:hover {
+  color: rgb(1, 157, 1); /* Change the text to green on hover */
+}
+
+.nav-link {
+  font-size: 1.3em;
+  color: var(--text-color);
+  text-decoration: none;
+  background-color: inherit;
+  border: none;
+  font-family: inherit;
+  font-weight: inherit;
+}
+
+.nav-link:hover {
   color: rgb(1, 157, 1); /* Change the text to green on hover */
 }
 
@@ -176,6 +208,59 @@ input:checked + .slider:before {
 .slider.round:before {
   border-radius: 50%;
 }
+
+.dropdown {
+  position: relative;
+}
+
+.dropdown-content {
+  position: absolute;
+  width: 100%;
+  display: none;
+  min-width: 160px;
+  z-index: 1;
+  transition: max-height 0.2s ease-out;
+  overflow: hidden;
+  max-height: 0;
+  background-color: var(--background-color);
+}
+
+.dropdown-content a {
+  color: var(--text-color); /* Match the text color with the header */
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  font-size: 1em; /* Smaller font size */
+}
+
+.dropdown-content a:hover {
+  background-color: #f1f1f1;
+  color: rgb(1, 157, 1); /* Change the text to green on hover */
+}
+
+.show-dropdown {
+  display: block;
+  top: 100%;
+  max-height: 200px;
+}
+
+.arrow {
+  border: solid black;
+  border-width: 0 3px 3px 0;
+  display: inline-block;
+  padding: 3px;
+  margin-left: 5px; /* Add some space to the left of the arrow */
+  transition: transform 0.3s ease; /* Smooth transition for the rotation */
+}
+
+.down {
+  transform: rotate(45deg);
+}
+
+.up {
+  transform: rotate(-135deg);
+}
+
 
 .footer-container {
   grid-column: 1 / -1;
