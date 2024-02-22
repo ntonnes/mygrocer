@@ -1,8 +1,8 @@
 {
     "scripts": {
-        "start-server": "nodemon server.js --prefix ./server",
-        "start-vue": "npm run serve --prefix ./client",
-        "start-db": "pg_ctl -D \"C:/Program Files/PostgreSQL/16/data\" start",
+        "start-server": "cd server && nodemon server.js",
+        "start-vue": "cd client && npm run serve",
+        "start-db": "pg_ctl start -D \"C:/Program Files/PostgreSQL/16/data\"",
         "start-all": "concurrently \"npm run start-server\" \"npm run start-vue\" \"npm run start-db\""
     }
 }

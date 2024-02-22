@@ -43,11 +43,15 @@ export default {
                 body: JSON.stringify({
                     email: this.email,
                     password: this.password
-                })
+                }),
+                credentials: 'include',
             });
 
             if (response.ok) {
+                const data = await response.json();
+                this.$store.commit('setUser', data.user);
                 this.showMessage('Logged in', 'success');
+
             } else {
                 this.showMessage('Invalid username or password', 'error');
             }

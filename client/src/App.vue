@@ -6,7 +6,8 @@
         <router-link to="/">Home</router-link>
         <router-link to="/about">About</router-link>
         <router-link to="/shopping-list">Shopping List</router-link>
-        <router-link to="/login">Login Page</router-link>
+        <router-link v-if="!isLoggedIn" to="/login">Login</router-link>
+        <span v-else>Hi, {{ userEmail }}!</span>
         <label class="switch">
           <input type="checkbox" v-model="isDarkMode" @change="toggleTheme">
           <span class="slider round"></span>
@@ -20,11 +21,22 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
+
 export default {
   data() {
     return {
       theme: localStorage.getItem('theme') || 'light',
     };
+  },
+  computed: {
+    ...mapState(['user']), // Map the 'user' state to a computed property
+    isLoggedIn() {
+      return this.user !== null; // The user is logged in if 'user' is not null
+    },
+    userEmail() {
+      return this.user ? this.user.email : ''; // Return the user's email if the user is logged in
+    },
   },
   methods: {
     toggleTheme() {
