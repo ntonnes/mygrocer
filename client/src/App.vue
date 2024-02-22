@@ -40,6 +40,7 @@ export default {
     return {
       dropdownOpen: false,
       theme: localStorage.getItem('theme') || 'light',
+      isDarkMode: localStorage.getItem('theme') === 'dark',
     };
   },
   created() {
@@ -67,6 +68,7 @@ export default {
   methods: {
     toggleTheme() {
       this.theme = this.theme === 'light' ? 'dark' : 'light';
+      this.isDarkMode = this.theme === 'dark';
       localStorage.setItem('theme', this.theme);
     },
     toggleDropdown() {
@@ -238,12 +240,10 @@ input:checked + .slider:before {
 .dropdown-content {
   position: absolute;
   width: 100%;
-  display: none;
   min-width: 160px;
-  z-index: 1;
-  transition: max-height 0.2s ease-out;
-  overflow: hidden;
   max-height: 0;
+  transition: max-height 2s ease-out;
+  overflow: hidden;
   background-color: var(--background-color);
 }
 
@@ -261,9 +261,7 @@ input:checked + .slider:before {
 }
 
 .show-dropdown {
-  display: block;
-  top: 100%;
-  max-height: 200px;
+  max-height: none;
 }
 
 .arrow {
@@ -282,7 +280,6 @@ input:checked + .slider:before {
 .up {
   transform: rotate(-135deg);
 }
-
 
 .footer-container {
   grid-column: 1 / -1;
